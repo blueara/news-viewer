@@ -16,13 +16,7 @@ const NewsListBlock = styled.div`
   }
 `;
 
-const sampleArticle = {
-  title: '제목',
-  description: '내용',
-  url: 'https://google.com',
-  urlToImage: 'https://via.placeholer.com/160',
-};
-const NewsList = () => {
+const NewsList = ({ category }) => {
   const [articles, setArticle] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -30,8 +24,9 @@ const NewsList = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
+        const query = category === 'all' ? '' : `&category=${category}`;
         const response = await axios.get(
-          'https://newsapi.org/v2/top-headlines?country=kr&apiKey=c585c9a8267c44b092c28551dc0b4c58',
+          `https://newsapi.org/v2/top-headlines?country=kr${query}&apiKey=c585c9a8267c44b092c28551dc0b4c58`,
         );
         setArticle(response.data.articles);
       } catch (e) {
@@ -40,7 +35,7 @@ const NewsList = () => {
       setLoading(false);
     };
     fetchData();
-  }, []);
+  }, [category]);
 
   if (loading) {
     return <NewsListBlock>대기 중...</NewsListBlock>;
@@ -51,7 +46,7 @@ const NewsList = () => {
   return (
     <NewsListBlock>
       {articles.map((article) => (
-        <NewsItem article={sampleArticle} />
+        <NewsItem key={article.url} article={article} />
       ))}
     </NewsListBlock>
   );
